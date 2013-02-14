@@ -1,7 +1,7 @@
 /****************************************************************************
  *  Compilation:  javac InteractivePercolationVisualizer.java
  *  Execution:    java InteractivePercolationVisualizer N
- *  Dependencies: PercolationVisualizer.java Percolation.java StdDraw.java StdOut.java
+ *  Dependencies: PercolationVisualizer.java unit1.Percolation.java StdDraw.java StdOut.java
  *
  *  This program takes the grid size N as a command-line argument.
  *  Then, the user repeatedly clicks sites to open with the mouse.

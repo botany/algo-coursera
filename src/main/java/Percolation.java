@@ -1,3 +1,5 @@
+
+
 /**
  * User: alex
  * Date: 2/12/13
@@ -12,6 +14,9 @@ public class Percolation {
 
     // create N-by-N grid, with all sites blocked
     public Percolation(int N) {
+        if (N < 1)
+            throw new IllegalArgumentException("Wrong N");
+
         this.grid = new int[N][N];
         this.size = N;
         this.gridSize = N * N + 2;
@@ -43,6 +48,8 @@ public class Percolation {
 
             if (j != 1 && getSite(i, j - 1) == 1)
                 uf.union(mapIndex(i, j), mapIndex(i, j - 1));
+
+            unionIfPercolation(i, j);
         }
     }
 
@@ -60,25 +67,32 @@ public class Percolation {
     // is site (row i, column j) open?
     public boolean isOpen(int i, int j) {
         validateArgs(i, j);
-        return (grid[i - 1][j - 1] == 1 ? true : false);
+        return (getSite(i, j) == 1 ? true : false);
     }
 
     // is site (row i, column j) full?
     public boolean isFull(int i, int j) {
         validateArgs(i, j);
+        if (isOpen(i, j) && uf.connected(0, mapIndex(i, j))) {
+            return true;
+        }
 
-        return isOpen(i, j) && uf.connected(0, mapIndex(i, j));
+        return false;
+    }
+
+    private void unionIfPercolation(int i, int j) {
+        if (isFull(i, j)) {
+            for (int x = 1; x <= size; x++) {
+                if (getSite(size, x) == 1 && isFull(size, x)) {
+                    uf.union(mapIndex(size, x), gridSize - 1);
+                }
+            }
+        }
     }
 
     // does the system percolate?
     public boolean percolates() {
-        for (int i = 1; i <= size; i++) {
-            for (int j = 1; j <= size; j++) {
-                if (isOpen(size, j) && uf.connected(mapIndex(1, i), mapIndex(size, j)))
-                    return true;
-            }
-        }
-        return false;
+        return uf.connected(0, gridSize - 1);
     }
 
 

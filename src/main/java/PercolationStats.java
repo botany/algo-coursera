@@ -9,39 +9,40 @@ public class PercolationStats {
 
     private int experimentCount; // number of experiments
     private int size; // field size
-    private double mean;
-    private double stddev;
-    private double confidenceLo;
-    private double confidenceHi;
+    private double[] experiments;
 
     /*
        Perform T independent computational experiments on an N-by-N grid
       */
     public PercolationStats(int N, int T) {
+        if (N < 1 || T < 1)
+            throw new IllegalArgumentException("Wrong N or T");
+
         this.size = N;
         this.experimentCount = T;
-
-        calc();
     }
 
     /*
       Sample mean of percolation threshold
       */
     public double mean() {
-        return this.mean;
+
+        return StdStats.mean(calc());
     }
 
-    private void calc() {
-        double[] meanElements = new double[experimentCount];
+    private double[] calc() {
 
-        for (int i = 0; i < experimentCount; i++) {
-            meanElements[i] = experiment();
+        if (experiments == null || experiments.length == 0) {
+            double[] meanElements = new double[experimentCount];
+
+            for (int i = 0; i < experimentCount; i++) {
+                meanElements[i] = experiment();
+            }
+
+            experiments = meanElements;
         }
 
-        this.mean = StdStats.mean(meanElements);
-        this.stddev = StdStats.stddev(meanElements);
-        this.confidenceLo = this.mean - (1.96 * stddev / Math.sqrt(experimentCount));
-        this.confidenceHi = this.mean + (1.96 * stddev / Math.sqrt(experimentCount));
+        return experiments;
     }
 
     private double experiment() {
@@ -55,8 +56,8 @@ public class PercolationStats {
         int j1 = 1;
 
         while (!percolation.percolates()) {
-            int i = rand.nextInt(this.size+1);
-            int j = rand.nextInt(this.size+1);
+            int i = rand.nextInt(this.size + 1);
+            int j = rand.nextInt(this.size + 1);
 
             if ((i == 0 || j == 0) || (i == i1 && j == j1)) continue;
             else {
@@ -75,21 +76,22 @@ public class PercolationStats {
       Sample standard deviation of percolation threshold
      */
     public double stddev() {
-        return stddev;
+
+        return StdStats.stddev(calc());
     }
 
     /*
       Returns lower bound of the 95% confidence interval
      */
     public double confidenceLo() {
-        return Math.abs(confidenceLo);
+        return Math.abs(mean() - (1.96 * stddev() / Math.sqrt(experimentCount)));
     }
 
     /*
       Returns upper bound of the 95% confidence interval
      */
     public double confidenceHi() {
-        return Math.abs(confidenceHi);
+        return Math.abs(mean() + (1.96 * stddev() / Math.sqrt(experimentCount)));
     }
 
     public static void main(String[] args)   // test client, described below

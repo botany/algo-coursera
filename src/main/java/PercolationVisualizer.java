@@ -1,7 +1,7 @@
 /****************************************************************************
  *  Compilation:  javac PercolationVisualizer.java
  *  Execution:    java PercolationVisualizer input.txt
- *  Dependencies: Percolation.java StdDraw.java In.java
+ *  Dependencies: unit1.Percolation.java StdDraw.java In.java
  *
  *  This program takes the name of a file as a command-line argument.
  *  From that file, it
@@ -28,7 +28,7 @@ public class PercolationVisualizer {
         StdDraw.setPenColor(StdDraw.BLACK);
         StdDraw.setXscale(0, N);
         StdDraw.setYscale(0, N);
-        StdDraw.filledSquare(N/2.0, N/2.0, N/2.0);
+        StdDraw.filledSquare(N / 2.0, N / 2.0, N / 2.0);
 
         // draw N-by-N grid
         int opened = 0;
@@ -51,9 +51,9 @@ public class PercolationVisualizer {
         // write status text
         StdDraw.setFont(new Font("SansSerif", Font.PLAIN, 12));
         StdDraw.setPenColor(StdDraw.BLACK);
-        StdDraw.text(.25*N, -N*.025, opened + " open sites");
-        if (perc.percolates()) StdDraw.text(.75*N, -N*.025, "percolates");
-        else                   StdDraw.text(.75*N, -N*.025, "does not percolate");
+        StdDraw.text(.25 * N, -N * .025, opened + " open sites");
+        if (perc.percolates()) StdDraw.text(.75 * N, -N * .025, "percolates");
+        else                   StdDraw.text(.75 * N, -N * .025, "does not percolate");
 
     }
 
