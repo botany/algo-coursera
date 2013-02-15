@@ -47,26 +47,29 @@ public class PercolationStats {
 
     private double experiment() {
 
-        Percolation percolation = new Percolation(this.size);
+        Percolation percolation = new Percolation(size);
 
-        Random rand = new Random();
-        int counter = 0;
-
-        int i1 = 1;
-        int j1 = 1;
+        double counter = 0;
 
         while (!percolation.percolates()) {
-            int i = rand.nextInt(this.size + 1);
-            int j = rand.nextInt(this.size + 1);
 
-            if ((i == 0 || j == 0) || (i == i1 && j == j1)) continue;
-            else {
-                i1 = i;
-                j1 = j;
-                percolation.open(i, j);
+            counter++;
 
-                ++counter;
+            //pick a random site
+            //(N+1 because second value to uniform is exclusive)
+            int i = StdRandom.uniform(1, size+1);
+            int j = StdRandom.uniform(1, size+1);
+
+            //generate new random sites until a blocked one is found
+            while (percolation.isOpen(i, j)) {
+
+                i = StdRandom.uniform(1, size+1);
+                j = StdRandom.uniform(1, size+1);
+
             }
+
+            //open that site
+            percolation.open(i, j);
         }
 
         return (double) counter / (size * size);

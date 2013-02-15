@@ -1,6 +1,5 @@
 import junit.framework.Assert;
 import org.junit.Test;
-
 /**
  * User: alex
  * Date: 2/11/13
@@ -90,5 +89,89 @@ public class AlgoTests {
         Percolation percolation = new Percolation(n);
 
         percolation.open(6, 12);
+    }
+
+    @Test
+    public void testSmallN() {
+        int n = 1;
+        Percolation percolation = new Percolation(n);
+
+        Assert.assertFalse(percolation.percolates());
+
+        n = 2;
+        percolation = new Percolation(n);
+
+        Assert.assertFalse(percolation.percolates());
+    }
+
+    @Test
+    public void testSmallNPercolates() {
+        int n = 5;
+        Percolation percolation = new Percolation(n);
+
+        percolation.open(1, 4);
+        percolation.open(5, 1);
+        percolation.open(2, 4);
+        percolation.open(3, 4);
+        percolation.open(4, 4);
+        percolation.open(4, 5);
+        percolation.open(5, 5);
+
+        Assert.assertTrue(percolation.percolates());
+
+        Assert.assertFalse(percolation.isFull(5, 3));
+
+    }
+
+    @Test
+    public void testPercolationStats() {
+        Stopwatch sw = new Stopwatch();
+        PercolationStats percolationStats = new PercolationStats(200, 100);
+        System.out.println("mean = " + percolationStats.mean());
+        System.out.println("stddev = " + percolationStats.stddev());
+        System.out.println("95% confidence interval = " + percolationStats.confidenceLo() + ", " + percolationStats.confidenceHi());
+        System.out.println(sw.elapsedTime());
+    }
+
+    @Test
+    public void testPercolates() {
+        int passes = 0;
+        int total = 0;
+        int[][] works = {{1, 1},         {1, 3},
+                {2, 1}, {2, 2},         {2, 4},
+                {3, 2}, {3, 3},
+                {4, 1},          {4, 3}};
+        total++;
+        if (testPercolates(4, works, true))
+            passes++;
+
+        int[][] bad = {{1, 1},         {1, 3},
+                {2, 1}, {2, 2},            {2, 4},
+                {3, 2},
+                {4, 1},          {4, 3}};
+        total++;
+        if (testPercolates(4, bad, false))
+            passes++;
+
+
+        System.err.println("Tests: " + passes + "/" + total);
+    }
+
+    private static boolean testPercolates(int N, int[][] openSites,
+                                          boolean expectation) {
+        boolean result;
+        Percolation tested = new Percolation(N);
+        for (int[] openSite: openSites)
+            tested.open(openSite[0], openSite[1]);
+        result = tested.percolates();
+        if (!result && expectation) {
+            System.err.println("Unexpected failure");
+            return false;
+        }
+        else if (result && !expectation) {
+            System.err.println("Unexpected success");
+            return false;
+        }
+        return true;
     }
 }
