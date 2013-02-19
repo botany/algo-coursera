@@ -157,6 +157,40 @@ public class AlgoTests {
         System.err.println("Tests: " + passes + "/" + total);
     }
 
+    @Test
+    public void testShellSort() {
+        long[] data = new long[]{60, 80, 18, 93, 39, 69, 94, 87, 48, 43};
+
+        shellSort(data.length, data);
+
+    }
+
+
+    public void shellSort(int len, long[] data) {
+        int inner, outer;
+        long temp;
+        //find initial value of h
+        int h = 1;
+        while (h <= len / 3)
+            h = h * 3 + 1; // (1, 4, 13, 40, 121, ...)
+
+        while (h > 0) // decreasing h, until h=1
+        {
+            // h-sort the file
+            for (outer = h; outer < len; outer++) {
+                temp = data[outer];
+                inner = outer;
+                // one subpass (eg 0, 4, 8)
+                while (inner > h - 1 && data[inner - h] >= temp) {
+                    data[inner] = data[inner - h];
+                    inner -= h;
+                }
+                data[inner] = temp;
+            }
+            h = (h - 1) / 3; // decrease h
+        }
+    }
+
     private static boolean testPercolates(int N, int[][] openSites,
                                           boolean expectation) {
         boolean result;
