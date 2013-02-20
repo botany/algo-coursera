@@ -7,71 +7,100 @@ import java.util.*;
  */
 public class Deque<Item> implements Iterable<Item> {
 
-    private LinkedList<Item> items;
+    private Entry<Item> first;
+    private Entry<Item> last;
+    private int size;
 
     // construct an empty deque
-    public Deque()
-    {
-        this.items = new LinkedList<Item>();
+    public Deque() {
+        size = 0;
+        first = null;
+        last = null;
     }
 
     // is the deque empty?
-    public boolean isEmpty()
-    {
-        return items.isEmpty();
+    public boolean isEmpty() {
+        return size == 0;
     }
 
     // return the number of items on the deque
-    public int size()
-    {
-        return items.size();
+    public int size() {
+        return size;
     }
 
     // insert the item at the front
-    public void addFirst(Item item)
-    {
-        if(item == null)throw new NullPointerException("item");
+    public void addFirst(Item item) {
+        if (item == null) throw new NullPointerException("item");
 
-        items.push(item);
+        Entry<Item> entry = new Entry<Item>(item, first, null);
+
+        if (!isEmpty())
+            first.previous = entry;
+
+        first = entry;
+
+        if (last == null) last = first;
+
+        ++size;
     }
 
     // insert the item at the end
-    public void addLast(Item item)
-    {
-        if(item == null)throw new NullPointerException("item");
+    public void addLast(Item item) {
+        if (item == null) throw new NullPointerException("item");
 
-        items.add(item);
+        Entry<Item> entry = new Entry<Item>(item, null, last);
+
+        if (!isEmpty())
+            last.next = entry;
+
+        last = entry;
+
+        if (first == null) first = last;
+
+        ++size;
     }
 
     // delete and return the item at the front
-    public Item removeFirst()
-    {
-        if(isEmpty()) throw new NoSuchElementException("empty");
+    public Item removeFirst() {
+        if (isEmpty()) throw new NoSuchElementException("empty");
 
-        Item item = items.removeFirst();
+        Item firstElement = first.element;
 
-        return item;
+        Entry<Item> newFirst = first.next;
+
+        if (newFirst != null) newFirst.previous = null;
+
+        if (last == first) last = null;
+
+        first = newFirst;
+
+        --size;
+
+        return firstElement;
     }
 
     // delete and return the item at the end
-    public Item removeLast()
-    {
-        if(isEmpty()) throw new NoSuchElementException("empty");
+    public Item removeLast() {
+        if (isEmpty()) throw new NoSuchElementException("empty");
 
-        Item item = items.removeLast();
+        Item item = last.element;
+
+        Entry<Item> newLast = last.previous;
+
+        if(newLast != null) newLast.next = null;
+
+        if(last == first) last =  first = null;
+        else last = newLast;
+
+        --size;
 
         return item;
     }
 
     public Iterator<Item> iterator()   // return an iterator over items in order from front to end
     {
-        return new CustomIterator(0);
+        return new CustomIterator();
     }
-
-    private transient Entry<Item> header = new Entry<Item>(null, null, null);
-
-    private transient int modCount = 0;
-    private transient int size = 0;
 
     private static class Entry<E> {
         E element;
@@ -85,125 +114,30 @@ public class Deque<Item> implements Iterable<Item> {
         }
     }
 
-    private Entry<Item> addBefore(Item e, Entry<Item> entry) {
-        Entry<Item> newEntry = new Entry<Item>(e, entry, entry.previous);
-        newEntry.previous.next = newEntry;
-        newEntry.next.previous = newEntry;
-        size++;
-        modCount++;
-        return newEntry;
-    }
+    private class CustomIterator implements Iterator<Item> {
 
-    private Item remove(Entry<Item> e) {
-        if (e == header)
-            throw new NoSuchElementException();
+        private Entry<Item> current = first;
 
-        Item result = e.element;
-        e.previous.next = e.next;
-        e.next.previous = e.previous;
-        e.next = e.previous = null;
-        e.element = null;
-        size--;
-        modCount++;
-        return result;
-    }
-
-    private class CustomIterator implements ListIterator<Item> {
-        private Entry<Item> lastReturned = header;
-        private Entry<Item> next;
-        private int nextIndex;
-        private int expectedModCount = modCount;
-
-        CustomIterator(int index) {
-            if (index < 0 || index > size)
-                throw new IndexOutOfBoundsException("Index: "+index+
-                        ", Size: "+size);
-            if (index < (size >> 1)) {
-                next = header.next;
-                for (nextIndex=0; nextIndex<index; nextIndex++)
-                    next = next.next;
-            } else {
-                next = header;
-                for (nextIndex=size; nextIndex>index; nextIndex--)
-                    next = next.previous;
-            }
-        }
-
+        @Override
         public boolean hasNext() {
-            return nextIndex != size;
+            return current != null;
         }
 
+        @Override
         public Item next() {
-            checkForComodification();
-            if (nextIndex == size)
-                throw new NoSuchElementException();
+            if (!hasNext())
+                throw new java.util.NoSuchElementException();
 
-            lastReturned = next;
-            next = next.next;
-            nextIndex++;
-            return lastReturned.element;
-        }
+            Item item = current.element;
 
-        public boolean hasPrevious() {
-            return nextIndex != 0;
-        }
+            current = current.next;
 
-        public Item previous() {
-            if (nextIndex == 0)
-                throw new NoSuchElementException();
-
-            lastReturned = next = next.previous;
-            nextIndex--;
-            checkForComodification();
-            return lastReturned.element;
-        }
-
-        public int nextIndex() {
-            return nextIndex;
-        }
-
-        public int previousIndex() {
-            return nextIndex-1;
+            return item;
         }
 
         public void remove() {
-            checkForComodification();
-            Entry<Item> lastNext = lastReturned.next;
-
-            try {
-                Deque.this.remove(lastReturned);
-            }
-            catch(NoSuchElementException e)
-            {
-                throw new UnsupportedOperationException("Error", e);
-            }
-
-            if (next==lastReturned)
-                next = lastNext;
-            else
-                nextIndex--;
-            lastReturned = header;
-            expectedModCount++;
+            throw new java.lang.UnsupportedOperationException();
         }
 
-        public void set(Item e) {
-            if (lastReturned == header)
-                throw new IllegalStateException();
-            checkForComodification();
-            lastReturned.element = e;
-        }
-
-        public void add(Item e) {
-            checkForComodification();
-            lastReturned = header;
-            addBefore(e, next);
-            nextIndex++;
-            expectedModCount++;
-        }
-
-        final void checkForComodification() {
-            if (modCount != expectedModCount)
-                throw new ConcurrentModificationException();
-        }
     }
 }

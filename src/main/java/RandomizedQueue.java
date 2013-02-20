@@ -41,8 +41,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     public Item dequeue()
     {
         if(isEmpty()) throw new NoSuchElementException("empty");
-
-        Item removedItem = items.remove(StdRandom.uniform(items.size()));
+        Item removedItem = items.remove(StdRandom.uniform(size()));
 
         return removedItem;
     }
@@ -52,7 +51,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     {
         if(isEmpty()) throw new NoSuchElementException("empty");
 
-        Item item = items.get(StdRandom.uniform(items.size()));
+        Item item = items.get(StdRandom.uniform(size()));
 
         return item;
     }

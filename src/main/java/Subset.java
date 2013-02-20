@@ -18,7 +18,7 @@ public class Subset {
 
         for(int i=0; i < stringCount; i++)
         {
-            System.out.println(rQueue.sample());
+            System.out.println(rQueue.dequeue());
         }
     }
 }
