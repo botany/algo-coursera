@@ -250,6 +250,26 @@ public class RandomizedQueueTest {
         assertThat(Arrays.asList(numbersOut), containsInAnyOrder(numbers));
     }
 
+    @Test
+    public void testSubset() {
+
+        int stringCount = 8;
+        RandomizedQueue<String> rQueue = new RandomizedQueue<String>();
+
+        String[] args = new String[]{"AA", "BB", "BB", "BB", "BB", "BB", "CC", "CC"};
+
+        for(int i=0; i < stringCount; i++)
+        {
+            String s = args[i];
+            rQueue.enqueue(s);
+        }
+
+        for(int i=0; i < stringCount; i++)
+        {
+            System.out.println(rQueue.dequeue());
+        }
+    }
+
     private void enqueueIntegers(Integer[] numbers, int from, int to) {
         for (int i = from; i < to; i++) {
             underTest.enqueue(numbers[i]);

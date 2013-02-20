@@ -7,16 +7,16 @@ public class Subset {
 
     public static void main(String[] args)
     {
-        int stringCount = Integer.parseInt(args[0]);
+        int k = Integer.parseInt(args[0]);
+
         RandomizedQueue<String> rQueue = new RandomizedQueue<String>();
 
-        for(int i=0; i < stringCount; i++)
-        {
+        while (!StdIn.isEmpty()) {
             String s = StdIn.readString();
             rQueue.enqueue(s);
         }
 
-        for(int i=0; i < stringCount; i++)
+        for(int i=0; i < k; i++)
         {
             System.out.println(rQueue.dequeue());
         }
